@@ -1,0 +1,24 @@
+#To load the nodes from a csv file
+LOAD CSV WITH HEADERS FROM 'file:///Family.csv' AS family
+CREATE(:Family{Name:family.HOME,Members:family.MEMBERS,Cars:family.CARS,Latitude:family.LATITUDE,Longitude:family.LONGITUDE})
+
+LOAD CSV WITH HEADERS FROM 'file:///Destination.csv' AS destination
+CREATE(:Destination{Place:destination.Place,Latitude:destination.Latitude,Longitude:destination.Longitude})
+
+
+#to create a relationship
+MATCH (x:Family),(y:Destination)
+WHERE x.FamName = "Sharma" AND y.Place = "Std Office"
+CREATE (x)-[r:Travels{Name:"Mr.Sharma",Car:"BMW X5" }]->(y)
+SET r.Timestamp = localdatetime()
+RETURN r
+
+
+# Emission Calculation of distance
+match(n:Family)-[r:Travels]-(m:Destination)
+where n.Name='Sharma'
+WITH point({longitude:toFloat(n.Longitude),latitude:toFloat(n.Latitude)}) AS p1,
+point({longitude:toFloat(m.Longitude),latitude:toFloat(m.Latitude)}) AS p2
+WITH toFloat(round(distance(p1,p2)))  AS TrDist
+Return (TrDist*0.001) AS Distanc
+

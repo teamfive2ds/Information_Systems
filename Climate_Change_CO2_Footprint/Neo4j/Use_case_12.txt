@@ -1,0 +1,35 @@
+'''
+Swathi, wants to travel from home to work. In order to reduce CO2 emisions during her transportation, 
+she wants to calculate her footprint if she travels by her car or public transport via train
+'''
+
+CALL 
+      algo.allShortestPaths.stream('dist', {
+        nodeQuery:'MATCH (n:city) RETURN id(n) as id',
+        relationshipQuery:'MATCH (n)-[r]-(p) RETURN id(n) as source, id(p) as target, r.dist as weight',
+        graph:'cypher'})
+    YIELD 
+      sourceNodeId, targetNodeId, distance
+    WITH 
+      sourceNodeId, targetNodeId, distance
+    WHERE
+      algo.isFinite(distance) = true
+    
+    MATCH 
+      (source), 
+      (target)
+    WHERE 
+      id(source) = sourceNodeId
+      AND source.name = "Berlin"
+      AND id(target) = targetNodeId
+      AND target.name = "Frankfurt am Main"
+    
+    WITH
+      source, target, distance 
+    WHERE
+      source <> target
+    RETURN 
+      source.name AS source, 
+      target.name AS target, 
+      distance
+

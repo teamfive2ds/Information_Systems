@@ -1,0 +1,7 @@
+//User Story 11
+//Ajay, a person working in city A wants to travel to city B. Depending on the traffic he wants to calculate the available routes along with their emissions
+
+match path = ((a:city{name:'Mannheim'})-[r:car*2..4]->(s:city{name:'Munich'}))
+with extract(n in nodes(path)|n.name) As thepath, path 
+with extract(s in relationships(path)|s.dist) As Distance,extract(s in relationships(path)|s.congestion) As Congestion, thepath
+return thepath,length(thepath),Distance,Reduce(x=0,v in Distance|x+v) AS total_distance,Congestion,Reduce(y=0,u in Congestion|y+u) AS total_congestion order by length(thepath)
